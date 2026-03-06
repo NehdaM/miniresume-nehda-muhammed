@@ -4,8 +4,7 @@ from rest_framework.response import Response
 from rest_framework import status
 
 from .serializers import ResumeSerializer
-from .resume_details import resumes
-# Create your views here.
+from .models import *
 
 @api_view(["GET", "POST", "DELETE"])
 def resumeView(request, pk=None):
@@ -14,13 +13,15 @@ def resumeView(request, pk=None):
 
         if pk is not None:
             
-            for res in resumes:
-                if res["id"] == pk:
-                    serializer = ResumeSerializer(res)
-                    return Response(serializer.data, status=status.HTTP_200_OK)
+            try:
+                resume = ResumeModel.objects.get(id=pk)
+                serializer = ResumeSerializer(resume)
+                return Response(serializer.data , status=status.HTTP_200_OK)
+            
+            except ResumeModel.DoesNotExist:
+                return Response({"error":"Resume Id not found"}, status=status.HTTP_404_NOT_FOUND)
 
-            return Response({"error":"Resume Id not found"}, status=status.HTTP_404_NOT_FOUND)
-
+        resumes = ResumeModel.objects.all()
         serializer = ResumeSerializer(resumes, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
     
@@ -29,19 +30,11 @@ def resumeView(request, pk=None):
         serializer = ResumeSerializer(data = request.data)
 
         if serializer.is_valid():
-            res_data = serializer.validated_data
-
-            if resumes:
-                new_id = max(res["id"] for res in resumes) + 1
-            else:
-                new_id = 1
-
-            res_data["id"] = new_id
-            resumes.append(res_data)
+            serializer.save()
             return Response(
                 {
                     "message": "Resume Created Successfully!",
-                    "data": res_data
+                    "data": serializer.data
                 },
                 status= status.HTTP_201_CREATED)
         else:
@@ -53,11 +46,12 @@ def resumeView(request, pk=None):
         if pk is None:
             return Response({"error": "Id is required for deletion"}, status=status.HTTP_400_BAD_REQUEST)
         
-        for res in resumes:
-            if res["id"] == pk:
-                resumes.remove(res)
-                return Response({"message" : "Deletion Successful!"}, status=status.HTTP_204_NO_CONTENT)
-        return Response({"error": "Resume Id not found"}, status=status.HTTP_404_NOT_FOUND)
+        try:
+            resumes = ResumeModel.objects.get(id=pk)
+            resumes.delete()
+            return Response({"message" : "Deletion Successful!"}, status=status.HTTP_204_NO_CONTENT)
+        except ResumeModel.DoesNotExist:
+            return Response({"error": "Resume Id not found"}, status=status.HTTP_404_NOT_FOUND)
     
 
 @api_view(["GET"])

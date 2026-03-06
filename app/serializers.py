@@ -1,8 +1,8 @@
 from rest_framework import serializers
+from .models import *
 
 
-class ResumeSerializer(serializers.Serializer):
-    id = serializers.IntegerField(read_only =True)
-    name = serializers.CharField(max_length=100)
-    email = serializers.EmailField()
-    ph_no = serializers.RegexField(regex= "^\d{10}$")
+class ResumeSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = ResumeModel
+        fields = '__all__'

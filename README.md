@@ -1,12 +1,12 @@
 # Mini Resume Collector API
 
-A simple Django REST Framework project to collect resume details via API, store them temporarily in memory without using a database
+A simple Django REST Framework project to collect resume details via API, store them in a SQLite database for persistent storage.
 
 ## Features
 
-- Accepts resume details(name, email, phone number)
+- Accepts resume details(name, email, phone number, skills, experience)
 - Input validation using DRF serializers
-- Temporary data storage
+- Persistent data storage using SQLite
 - REST endpoints for creating , deleting and retrieving resumes
 
 ## Technologies Used(Version)
@@ -14,6 +14,7 @@ A simple Django REST Framework project to collect resume details via API, store 
 - Python 3.12
 - Django 6.0.2
 - Django Rest Framework 3.16.1
+- SQLite
 
 ## Installation steps
 
